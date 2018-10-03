@@ -106,7 +106,7 @@ defmodule ExMarshal.Decoder do
   defp decode_ivar(<<ivar_type::8, value::binary>>, state) do
     case ivar_type do
       34 -> decode_string(value, state)
-#      _ -> raise ExMarshal.DecodeError, reason: {:ivar_string_only, value}
+      _ -> {"", nil, state} #raise ExMarshal.DecodeError, reason: {:ivar_string_only, value}
     end
   end
 
