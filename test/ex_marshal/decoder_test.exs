@@ -375,17 +375,22 @@ defmodule ExMarshalDecoderTest do
     end
   end
 
-  test "raises exception for non-supported symbol" do
-    ruby_encoded = File.read!("./test/fixtures/regexp.bin")
-
-    assert_raise ExMarshal.DecodeError, fn ->
-      ExMarshal.decode(ruby_encoded)
-    end
-  end
-
   test "decode repetitive symbols" do
     value = <<4, 8, 123, 6, 73, 34, 6, 120, 6, 58, 6, 69, 84, 91, 7, 58, 12, 115, 117, 99, 99, 101, 115, 115, 59, 6>>
 
     assert %{"x" => [:success, :success]} == ExMarshal.decode(value)
   end
+
+  test "don't raise exception for non-supported ivar (1)" do
+    h = "\x04\b{\a:\vra9api{\x06:\fuser_idi\x01{:\nflashIC:'ActionController::Flash::FlashHash{\x06I\"\fmessage\x06:\x06ETI\"\ttest\x06;\tT\x06:\n@usedT"
+
+    assert %{flash: nil, ra9api: %{user_id: 123}} == ExMarshal.decode(h)
+  end
+
+  test "don't raise exception for non-supported ivar (2)" do
+    h = "\x04\b{\a:\nflashIC:'ActionController::Flash::FlashHash{\x06I\"\fmessage\x06:\x06ETI\"\ttest\x06;\aT\x06:\n@usedT:\vra9api{\x06:\fuser_idi\x01{"
+
+    assert %{"ActionController::Flash::FlashHash": %{"message" => "test"}, flash: nil} == ExMarshal.decode(h)
+  end
+
 end
