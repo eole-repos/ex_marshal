@@ -15,7 +15,7 @@ defmodule ExMarshal.Decoder do
       "T" -> {true, value, state}
       "F" -> {false, value, state}
       "i" -> decode_fixnum(value, state)
-#      "I" -> {nil, value, state} #decode_ivar(value, state)
+      "I" -> decode_ivar(value, state)
       "\"" -> decode_raw_string(value, state)
       ":" -> decode_symbol(value, state)
       ";" -> decode_linked_symbol(value, state)
@@ -40,7 +40,7 @@ defmodule ExMarshal.Decoder do
         decode_hash(value, state)
       "@" -> decode_reference(value, state)
       _symbol when nullify_objects -> {nil, value, state}
-      symbol -> {nil, value, state} #raise ExMarshal.DecodeError, reason: {:not_supported, symbol}
+      symbol -> raise ExMarshal.DecodeError, reason: {:not_supported, symbol}
     end
   end
 
@@ -106,7 +106,8 @@ defmodule ExMarshal.Decoder do
   defp decode_ivar(<<ivar_type::8, value::binary>>, state) do
     case ivar_type do
       34 -> decode_string(value, state)
-      _ -> raise ExMarshal.DecodeError, reason: {:ivar_string_only, value}
+      _ ->
+        {nil, value, state}
     end
   end
 
