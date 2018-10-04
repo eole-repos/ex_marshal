@@ -15,7 +15,7 @@ defmodule ExMarshal.Decoder do
       "T" -> {true, value, state}
       "F" -> {false, value, state}
       "i" -> decode_fixnum(value, state)
-      "I" -> decode_ivar(value, state)
+#      "I" -> {nil, value, state} #decode_ivar(value, state)
       "\"" -> decode_raw_string(value, state)
       ":" -> decode_symbol(value, state)
       ";" -> decode_linked_symbol(value, state)
