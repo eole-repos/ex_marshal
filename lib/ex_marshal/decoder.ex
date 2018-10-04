@@ -8,7 +8,7 @@ defmodule ExMarshal.Decoder do
   end
 
   defp decode_element(<<data_type::1-bytes, value::binary>>, state) do
-    nullify_objects = Application.get_env(:ex_marshal, :nullify_objects, false)
+    nullify_objects = Application.get_env(:ex_marshal, :nullify_objects, true)
 
     case data_type do
       "0" -> {nil, value, state}
@@ -40,7 +40,7 @@ defmodule ExMarshal.Decoder do
         decode_hash(value, state)
       "@" -> decode_reference(value, state)
       _symbol when nullify_objects -> {nil, value, state}
-      symbol -> raise ExMarshal.DecodeError, reason: {:not_supported, symbol}
+      symbol -> {nil, value, state} #raise ExMarshal.DecodeError, reason: {:not_supported, symbol}
     end
   end
 
